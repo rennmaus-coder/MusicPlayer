@@ -1,0 +1,11 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{Binding Source={StaticResource ProfileService}, Path=ActiveProfile.ColorSchema.BackgroundColor}" />
+    <SolidColorBrush x:Key="BorderBrush" Color="{Binding Source={StaticResource ProfileService}, Path=ActiveProfile.ColorSchema.BorderColor}" />
+    <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="{Binding Source={StaticResource ProfileService}, Path=ActiveProfile.ColorSchema.ButtonBackgroundColor}" />
+    <SolidColorBrush x:Key="ButtonBackgroundSelectedBrush" Color="{Binding Source={StaticResource ProfileService}, Path=ActiveProfile.ColorSchema.ButtonBackgroundSelectedColor}" />
+    <SolidColorBrush x:Key="ButtonForegroundBrush" Color="{Binding Source={StaticResource ProfileService}, Path=ActiveProfile.ColorSchema.ButtonForegroundColor}" />
+    <SolidColorBrush x:Key="ButtonForegroundDisabledBrush" Color="{Binding Source={StaticResource ProfileService}, Path=ActiveProfile.ColorSchema.ButtonForegroundDisabledColor}" />
+    <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="{Binding Source={StaticResource ProfileService}, Path=ActiveProfile.ColorSchema.SecondaryBackgroundColor}" />
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{Binding Source={StaticResource ProfileService}, Path=ActiveProfile.ColorSchema.PrimaryColor}" />
+</ResourceDictionary>

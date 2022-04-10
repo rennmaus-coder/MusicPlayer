@@ -1,0 +1,13 @@
+﻿[
+	{
+		"Name": "Dark",
+		"PrimaryColor": "#ffffff",
+		"SecondaryBackgroundColor": "#404144",
+		"BorderColor": "#292a2d",
+		"BackgroundColor": "#191a1c",
+		"ButtonBackgroundColor": "#34373d",
+		"ButtonBackgroundSelectedColor": "#696c70",
+		"ButtonForegroundColor": "#6495ed",
+		"ButtonForegroundDisabledColor": "#374c70"
+	}
+]

@@ -1,0 +1,25 @@
+﻿<Application
+    x:Class="MusicPlayer.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:MusicPlayer"
+    xmlns:resources="clr-namespace:MusicPlayer.Resources"
+    StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+
+                <resources:SharedResourceDictionary Source="/MusicPlayer;component/Resources/ProfileService.xaml" />
+
+                <resources:SharedResourceDictionary Source="/MusicPlayer;component/Resources/Brushes.xaml" />
+
+                <!--  UI Styles  -->
+                <resources:SharedResourceDictionary Source="/MusicPlayer;component/Resources/Styles/Button.xaml" />
+
+                <!--  Optional UI Styles  -->
+                <ResourceDictionary Source="/MusicPlayer;component/Resources/Styles/MenuButton.xaml" />
+                <ResourceDictionary Source="/MusicPlayer;component/Resources/SVG.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
