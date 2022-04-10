@@ -9,17 +9,20 @@
 
 #endregion "copyright"
 
-using MusicPlayer.Core.Playback.Queue.Interfaces;
+using MusicPlayer.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MusicPlayer.Core.Songs.Interfaces
+namespace MusicPlayer.Core.Playback.Queue.Interfaces
 {
-    public interface ISong : ISequenceItem
+    public interface ISequenceItem
     {
-        SongInfo GetInfo();
+        Task Play(IQueueMediator mediator);
+        void Continue();
+        void Stop();
+        void Pause();
     }
 }

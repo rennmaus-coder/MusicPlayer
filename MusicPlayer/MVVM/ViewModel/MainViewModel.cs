@@ -9,17 +9,19 @@
 
 #endregion "copyright"
 
-using MusicPlayer.Core.Playback.Queue.Interfaces;
+using MusicPlayer.Core.Songs;
+using MusicPlayer.MVVM.ViewModel.Interfaces;
+using MusicPlayer.Util;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MusicPlayer.Core.Songs.Interfaces
+namespace MusicPlayer.MVVM.ViewModel
 {
-    public interface ISong : ISequenceItem
+    public class MainViewModel : ObservableObject, IMainViewModel
     {
-        SongInfo GetInfo();
+        public List<Song> GetSongList()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

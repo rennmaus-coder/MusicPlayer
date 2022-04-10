@@ -12,6 +12,7 @@
 
 using MusicPlayer.Util;
 using System;
+using System.IO;
 
 namespace MusicPlayer.Core.Songs
 {
@@ -73,12 +74,18 @@ namespace MusicPlayer.Core.Songs
             bitrate = tags.Properties.AudioBitrate;
             genre = MatchStringToGenre(tags.Tag.FirstGenre);
 
+            if (string.IsNullOrEmpty(title))
+            {
+                title = Path.GetFileNameWithoutExtension(path);
+            }
+
             SongInfo songInfo = new SongInfo()
             {
                 Album = album,
                 Bitrate = bitrate,
                 Duration = duration,
                 FileType = FileType,
+                FilePath = path,
                 Genre = genre,
                 Rating = 0,
                 Songwriter = songwriter,
@@ -86,6 +93,11 @@ namespace MusicPlayer.Core.Songs
             };
 
             return new Song(songInfo);
+        }
+
+        public Song ImportFromInfo(SongInfo info)
+        {
+            return new Song(info);
         }
 
         private Genre MatchStringToGenre(string genre)

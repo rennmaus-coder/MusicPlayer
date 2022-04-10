@@ -9,31 +9,100 @@
 
 #endregion "copyright"
 
+using MusicPlayer.Core.Playback.Queue.Interfaces;
 using MusicPlayer.Core.Songs.Interfaces;
+using MusicPlayer.Util;
+using NAudio.Wave;
 using System;
+using System.Media;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MusicPlayer.Core.Songs
 {
-    [Serializable()]
     public class Song : ISong
     {
         /// <summary>
         /// Creates a new instance of the <see cref="Song"/> class.
         /// </summary>
-        /// <param name="title">The title of the song (required)</param>
-        /// <param name="songwriter">The sonfwriter of the song, string.empty if unkown</param>
-        /// <param name="album">The album of the song, string.empty if unkown</param>
-        /// <param name="duration">The duration of the song in seconds, -1 if unkown</param>
-        public Song(SongInfo info)
-        {
-            Info = info;
-        }
+        /// <param name="info">A SongInfo instance</param>
+        public Song(SongInfo info) => Info = info;
+
+        #region Private Fields
         
         private SongInfo Info { get; set; }
         
+        private Thread PlayTask;
+        private CancellationTokenSource PlayCancellationToken;
+        private IQueueMediator queue;
+
+        #endregion
+
+        #region Public Properties
+
+        public TimeSpan Progress { get; set; }
+
+        #endregion
+
+        #region Interface Methods
         public SongInfo GetInfo()
         {
             return Info;
         }
+
+        public async Task Play(IQueueMediator mediator)
+        {
+            queue = mediator;
+            if (PlayTask.ThreadState == ThreadState.Running)
+            {
+                Logger.Warn($"Song {Info.Title} is already playing");
+                return;
+            }
+            PlayTask = new Thread(new ThreadStart(PlayThread));
+            PlayTask.Start();
+            PlayTask.Join();
+
+            return;
+        }
+
+        public void Stop()
+        {
+            if (PlayTask is null || PlayCancellationToken is null) return;
+            if (PlayTask.ThreadState == ThreadState.Running)
+            {
+                PlayCancellationToken.Cancel();
+            }
+        }
+
+        public void Pause()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Continue()
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region Private Methods
+
+        private void PlayThread()
+        {
+            AudioFileReader reader = new AudioFileReader(Info.FilePath);
+            using (WaveOutEvent outputDevice = new WaveOutEvent())
+            {
+                outputDevice.Init(reader);
+                outputDevice.Play();
+                while (outputDevice.PlaybackState == PlaybackState.Playing)
+                {
+                    Thread.Sleep(200);
+                    Progress = reader.CurrentTime;
+                    queue.UpdateProgress(Progress);
+                }
+            }
+        }
+        
+        #endregion
     }
 }

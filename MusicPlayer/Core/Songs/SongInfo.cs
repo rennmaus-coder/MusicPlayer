@@ -20,11 +20,12 @@ namespace MusicPlayer.Core.Songs
         public string Title { get; set; }
         public string Songwriter { get; set; }
         public string Album { get; set; }
+        public string FilePath { get; set; }
         public TimeSpan Duration { get; set; }
         public int Bitrate { get; set; }
+        public int Rating { get; set; }
         public Genre Genre { get; set; }
         public FileTypes FileType { get; set; }
-        public int Rating { get; set; }
 
         public SongInfo()
         {
