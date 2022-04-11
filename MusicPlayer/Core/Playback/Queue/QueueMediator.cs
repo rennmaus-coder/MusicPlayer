@@ -11,6 +11,8 @@
 
 using MusicPlayer.Core.Playback.Queue.Interfaces;
 using MusicPlayer.Core.Songs;
+using MusicPlayer.Core.Songs.Interfaces;
+using MusicPlayer.MVVM.ViewModel;
 using MusicPlayer.MVVM.ViewModel.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -20,44 +22,62 @@ namespace MusicPlayer.Core.Playback.Queue
 {
     public class QueueMediator : IQueueMediator
     {
-        public List<Song> Queue { get; set; }
-        public Song CurrentSong { get; set; }
-        public int QueueIndex { get; set; }
-        
+        public List<ISong> Queue { get; set; }
+        public ISong CurrentSong { get; set; }
+
+        public event EventHandler<ISong> OnSongChanged;
+        public RelayCommand TogglePlay { get; set; }
+
         private IMainViewModel mainViewModel;
+        private bool isPlaying;
+        private List<ISong> PlayedSongs;
 
         public QueueMediator(IMainViewModel mainViewModel)
         {
             this.mainViewModel = mainViewModel;
-            Queue = new List<Song>();
-            QueueIndex = -1;
+            Queue = new List<ISong>();
         }
 
-        public async Task Start()
+        /// <summary>
+        /// Starts the playback of the first song in the queue and continues further
+        /// </summary>
+        /// <returns></returns>
+        public async Task PlayNext()
         {
-            QueueIndex = -1;
-            
-            foreach (var song in Queue)
+            if (Queue.Count == 0 || isPlaying)
             {
-                QueueIndex++;
-                CurrentSong = song;
-                await song.Play(this);
+                return;
             }
+            CurrentSong = Queue[0];
+            isPlaying = true;
+            OnSongChanged?.Invoke(this, CurrentSong);
+            await CurrentSong.Play(this);
+            Queue.RemoveAt(0);
+            PlayedSongs.Insert(0, CurrentSong);
+            PlayNext();
         }
 
-        public void PlayNext()
+        public async Task PlayPrevious()
         {
-            CurrentSong.Stop();
-        }
-
-        public void PlayPrevious()
-        {
-            throw new NotImplementedException();
+            if (CurrentSong?.Progress.TotalSeconds < 5)
+            {
+                CurrentSong.SetProgress(new TimeSpan(0, 0, 0));
+                await CurrentSong.Play(this);
+            }
+            else
+            {
+                Queue.Insert(0, PlayedSongs[0]);
+            }
         }
 
         public void UpdateProgress(TimeSpan progress)
         {
-            throw new NotImplementedException();
+            ((MainViewModel)mainViewModel).Progress = progress;
+        }
+
+        public void SetProgress(TimeSpan progress)
+        {
+            CurrentSong?.SetProgress(progress);
         }
     }
 }

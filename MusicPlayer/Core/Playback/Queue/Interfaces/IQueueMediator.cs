@@ -9,6 +9,8 @@
 
 #endregion "copyright"
 
+using MusicPlayer.Core.Songs;
+using MusicPlayer.Core.Songs.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,8 +21,11 @@ namespace MusicPlayer.Core.Playback.Queue.Interfaces
 {
     public interface IQueueMediator
     {
-        void PlayNext();
-        void PlayPrevious();
+        Task PlayNext();
+        Task PlayPrevious();
         void UpdateProgress(TimeSpan progress);
+        void SetProgress(TimeSpan progress);
+
+        event EventHandler<ISong> OnSongChanged;
     }
 }

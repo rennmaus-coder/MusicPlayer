@@ -4,6 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:MusicPlayer"
     xmlns:resources="clr-namespace:MusicPlayer.Resources"
+    xmlns:view="clr-namespace:MusicPlayer.MVVM.View"
+    xmlns:viewmodel="clr-namespace:MusicPlayer.MVVM.ViewModel"
     StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -15,11 +17,17 @@
 
                 <!--  UI Styles  -->
                 <resources:SharedResourceDictionary Source="/MusicPlayer;component/Resources/Styles/Button.xaml" />
+                <resources:SharedResourceDictionary Source="/MusicPlayer;component/Resources/Styles/TextBox.xaml" />
+                <resources:SharedResourceDictionary Source="/MusicPlayer;component/Resources/Styles/Slider.xaml" />
 
                 <!--  Optional UI Styles  -->
                 <ResourceDictionary Source="/MusicPlayer;component/Resources/Styles/MenuButton.xaml" />
                 <ResourceDictionary Source="/MusicPlayer;component/Resources/SVG.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate DataType="{x:Type viewmodel:HomeViewModel}">
+                <view:HomeView />
+            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

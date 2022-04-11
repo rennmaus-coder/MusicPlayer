@@ -9,6 +9,7 @@
 
 #endregion "copyright"
 
+using MusicPlayer.Core.Playback.Queue.Interfaces;
 using MusicPlayer.Core.Songs;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,8 @@ namespace MusicPlayer.MVVM.ViewModel.Interfaces
 {
     public interface IMainViewModel
     {
-        List<Song> GetSongList();
+        HomeViewModel HomeViewModel { get; }
+        IQueueMediator Queue { get; }
+        string TrackTitle { get; set; }
     }
 }

@@ -9,11 +9,24 @@
 
 #endregion "copyright"
 
+using MusicPlayer.Core.Songs;
 using MusicPlayer.Util;
+using System;
+using System.Collections.Generic;
 
 namespace MusicPlayer.MVVM.ViewModel
 {
     public class HomeViewModel : ObservableObject
     {
+        private List<Song> _songs;
+        public List<Song> Songs
+        {
+            get => _songs;
+            private set
+            {
+                _songs = value;
+                RaisePropertyChanged();
+            }
+        }
     }
 }

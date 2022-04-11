@@ -10,7 +10,11 @@
 #endregion "copyright"
 
 using MusicPlayer.Core.Profile;
+using MusicPlayer.MVVM.ViewModel;
+using MusicPlayer.Util;
+using System;
 using System.Windows;
+using System.Windows.Input;
 
 namespace MusicPlayer
 {

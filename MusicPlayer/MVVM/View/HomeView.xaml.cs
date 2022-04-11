@@ -14,18 +14,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
-namespace MusicPlayer.Util
+namespace MusicPlayer.MVVM.View
 {
-    public static class CoreUtil
+    /// <summary>
+    /// Interaktionslogik für HomeView.xaml
+    /// </summary>
+    public partial class HomeView : UserControl
     {
-        public static async Task WaitForMouseUp()
+        public HomeView()
         {
-            while (Mouse.LeftButton == MouseButtonState.Pressed)
-            {
-                await Task.Delay(10);
-            }
+            InitializeComponent();
         }
     }
 }

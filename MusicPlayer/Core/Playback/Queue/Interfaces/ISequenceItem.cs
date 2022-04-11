@@ -9,20 +9,18 @@
 
 #endregion "copyright"
 
-using MusicPlayer.Util;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MusicPlayer.Core.Playback.Queue.Interfaces
 {
     public interface ISequenceItem
     {
+        TimeSpan Progress { get; set; }
         Task Play(IQueueMediator mediator);
-        void Continue();
+        bool Continue();
         void Stop();
         void Pause();
+        void SetProgress(TimeSpan progress); 
     }
 }
