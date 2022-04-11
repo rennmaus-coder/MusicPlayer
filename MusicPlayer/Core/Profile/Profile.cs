@@ -9,17 +9,46 @@
 
 #endregion "copyright"
 
-using System;
+using MusicPlayer.Core.Songs;
+using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MusicPlayer.Core.Profile
 {
-    public class Profile
+    public class Profile : IProfile
     {
-        public ColorSchemas ColorSchemaSettings { get; set; }
+        [JsonIgnore]
+        private static ColorSchemas _colorSchemas;
+
+        [JsonIgnore]
         public ColorSchema ColorSchema { get; set; }
+        public List<Song> Songs { get; set; }
+        public string Name { get; set; } = "Profile";
+        public string ColorSchemaName { get; set; } = "Dark";
+        public bool IsDefault { get; set; } = true;
+
+        public Profile()
+        {
+            List<ColorSchema> schemas = ColorSchemas.ReadColorSchemas();
+            _colorSchemas = new ColorSchemas() { ColorSchemasList = schemas };
+            ColorSchema = schemas.Find(x => x.Name == ColorSchemaName);
+            ColorSchemaName = ColorSchema.Name;
+        }
+
+        public ColorSchemas GetColorSchemas()
+        {
+            if (_colorSchemas == null)
+            {
+                _colorSchemas = new ColorSchemas();
+            }
+
+            return _colorSchemas;
+        }
+
+        public void SetColorSchema(ColorSchema schema)
+        {
+            ColorSchema = schema;
+            ColorSchemaName = schema.Name;
+        }
     }
 }

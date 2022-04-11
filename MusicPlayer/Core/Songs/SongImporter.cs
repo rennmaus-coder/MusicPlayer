@@ -27,42 +27,22 @@ namespace MusicPlayer.Core.Songs
             string extension = path.ToLower().Split('.')[path.ToLower().Split('.').Length - 1];
             
             TagLib.File tags = TagLib.File.Create(path);
-            FileTypes FileType;
             Genre genre;
             string title;
             string songwriter;
             string album;
             int bitrate;
             TimeSpan duration;
-
-            switch (extension)
+            FileTypes FileType = extension switch
             {
-                case "aac": 
-                    FileType = FileTypes.AAC;
-                    break;
-                case "alac":
-                    FileType = FileTypes.ALAC;
-                    break;
-                case "flac":
-                    FileType = FileTypes.FLAC;
-                    break;
-                case "mp3":
-                    FileType = FileTypes.MP3;
-                    break;
-                case "ogg":
-                    FileType = FileTypes.OGG;
-                    break;
-                case "wav":
-                    FileType = FileTypes.WAV;
-                    break;
-                case "wma":
-                    FileType = FileTypes.WMA;
-                    break;
-                default:
-                    throw new ArgumentException($"Filetype not supported: {path}");
-
-            }
-
+                "AIFF" => FileTypes.AIFF,
+                "flac" => FileTypes.FLAC,
+                "mp3" => FileTypes.MP3,
+                "ogg" => FileTypes.OGG,
+                "wav" => FileTypes.WAV,
+                "wma" => FileTypes.WMA,
+                _ => throw new ArgumentException($"Filetype not supported: {path}"),
+            };
             if (tags.PossiblyCorrupt)
             {
                 Logger.Warn($"File may be corrupt, please check: {path}\nReasons: {string.Join("\n", tags.CorruptionReasons)}");
@@ -103,29 +83,19 @@ namespace MusicPlayer.Core.Songs
         private Genre MatchStringToGenre(string genre)
         {
             genre = genre.ToUpper();
-            
-            switch (genre) 
+
+            return genre switch
             {
-                case "BLUES":
-                    return Genre.BLUES;
-                case "CLASSIC":
-                    return Genre.CLASSIC;
-                case "COUNTRY":
-                    return Genre.COUNTRY;
-                case "FOLK":
-                    return Genre.FOLK;
-                case "HIPHOP":
-                    return Genre.HIPHOP;
-                case "JAZZ":
-                    return Genre.JAZZ;
-                case "METAL":
-                    return Genre.METAL;
-                case "POP":
-                    return Genre.POP;
-                default:
-                    return Genre.OTHER;
-            }
-                
+                "BLUES" => Genre.BLUES,
+                "CLASSIC" => Genre.CLASSIC,
+                "COUNTRY" => Genre.COUNTRY,
+                "FOLK" => Genre.FOLK,
+                "HIPHOP" => Genre.HIPHOP,
+                "JAZZ" => Genre.JAZZ,
+                "METAL" => Genre.METAL,
+                "POP" => Genre.POP,
+                _ => Genre.OTHER,
+            };
         }
     }
 }

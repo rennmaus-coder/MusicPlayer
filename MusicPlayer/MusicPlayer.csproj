@@ -97,6 +97,7 @@
     <Compile Include="Core\Playback\Queue\Interfaces\ISequenceItem.cs" />
     <Compile Include="Core\Playback\Queue\QueueMediator.cs" />
     <Compile Include="Core\Profile\ColorSchemas.cs" />
+    <Compile Include="Core\Profile\IProfile.cs" />
     <Compile Include="Core\Profile\Profile.cs" />
     <Compile Include="Core\Profile\ProfileService.cs" />
     <Compile Include="Core\Songs\SongEnums.cs" />

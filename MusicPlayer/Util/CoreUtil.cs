@@ -10,9 +10,7 @@
 #endregion "copyright"
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -20,6 +18,10 @@ namespace MusicPlayer.Util
 {
     public static class CoreUtil
     {
+        public static DateTime APPLICATIONSTART = DateTime.Now;
+        public static string APPLICATIONNAME = "MusicPlayer";
+        public static string APPLICATIONVERSION = "0.0.1";
+        public static string APPDATA = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MusicPlayer");
         public static async Task WaitForMouseUp()
         {
             while (Mouse.LeftButton == MouseButtonState.Pressed)

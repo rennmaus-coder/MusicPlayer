@@ -22,8 +22,7 @@ namespace MusicPlayer.Util
 
         static Logger()
         {
-            string localappdata = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string LogsDir = Path.Combine(localappdata, "MusicPlayer", "Logs");
+            string LogsDir = Path.Combine(CoreUtil.APPDATA, "Logs");
 
             if (!Directory.Exists(LogsDir))
             {

@@ -33,9 +33,8 @@ namespace MusicPlayer.Core.Songs
         WAV,
         MP3,
         OGG,
-        ALAC,
         FLAC,
-        AAC,
-        WMA
+        WMA,
+        AIFF
     }
 }
