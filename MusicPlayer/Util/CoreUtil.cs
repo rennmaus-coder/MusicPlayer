@@ -10,8 +10,11 @@
 #endregion "copyright"
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace MusicPlayer.Util
@@ -21,12 +24,28 @@ namespace MusicPlayer.Util
         public static DateTime APPLICATIONSTART = DateTime.Now;
         public static string APPLICATIONNAME = "MusicPlayer";
         public static string APPLICATIONVERSION = "0.0.1";
-        public static string APPDATA = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MusicPlayer");
+        public static string APPDATA = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), APPLICATIONNAME);
         public static async Task WaitForMouseUp()
         {
             while (Mouse.LeftButton == MouseButtonState.Pressed)
             {
                 await Task.Delay(10);
+            }
+        }
+
+        public static List<string> FileDialog()
+        {
+            using (OpenFileDialog dialog = new OpenFileDialog())
+            {
+                dialog.Filter = "Audio Files(*.wav;*.mp3;*.ogg;*.flac;*.wma;*.aiff;*.m4a)|*.wav;*.mp3;*.ogg;*.flac;*.wma;*.aiff;*.m4a";
+                dialog.Title = "Select Songs";
+                dialog.Multiselect = true;
+                DialogResult res = dialog.ShowDialog();
+                if (res == DialogResult.OK)
+                {
+                    return dialog.FileNames.ToList();
+                }
+                return new List<string>();
             }
         }
     }

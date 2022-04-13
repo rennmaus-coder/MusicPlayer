@@ -10,19 +10,16 @@
 #endregion "copyright"
 
 using MusicPlayer.Core.Playback.Queue.Interfaces;
-using MusicPlayer.Core.Songs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MusicPlayer.Core.Profile;
 
 namespace MusicPlayer.MVVM.ViewModel.Interfaces
 {
     public interface IMainViewModel
     {
-        HomeViewModel HomeViewModel { get; }
+        IHomeVM HomeVM { get; }
+        IOptionsVM OptionsVM { get; }
         IQueueMediator Queue { get; }
+        ProfileService ProfileService { get; }
         string TrackTitle { get; set; }
     }
 }

@@ -9,24 +9,26 @@
 
 #endregion "copyright"
 
-using MusicPlayer.Core.Profile;
 using MusicPlayer.MVVM.ViewModel;
-using MusicPlayer.Util;
-using System;
+using System.ServiceModel;
 using System.Windows;
-using System.Windows.Input;
 
 namespace MusicPlayer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
-            new ProfileService();
             InitializeComponent();
+            Application.Current.Exit += (sender, e) =>
+            {
+                MainViewModel.instance.ProfileService.Dispose();
+            };
         }
     }
 }

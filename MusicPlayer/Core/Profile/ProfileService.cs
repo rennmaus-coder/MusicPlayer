@@ -11,17 +11,21 @@
 
 using MusicPlayer.Util;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.ServiceModel;
 using System.Windows;
 
 namespace MusicPlayer.Core.Profile
 {
-    public class ProfileService : ObservableObject
+    public class ProfileService : ObservableObject, IDisposable
     {
-        [JsonIgnore]
+        public static ProfileService Instance { get; set; }
+
+        private static bool initialized = false;
+        
         private IProfile _activeProfile;
-        [JsonIgnore]
         public IProfile ActiveProfile
         {
             get => _activeProfile;
@@ -36,31 +40,49 @@ namespace MusicPlayer.Core.Profile
         
         public ProfileService()
         {
-            if (Directory.Exists(Path.Combine(CoreUtil.APPDATA, "Profiles"))) 
+            if (initialized) return;
+            
+            if (File.Exists(Path.Combine(CoreUtil.APPDATA, "profiles.json")))
             {
-                if (File.Exists(Path.Combine(CoreUtil.APPDATA, "Profiles", "profiles.json")))
+                Logger.Info("Loading profiles from json");
+                List<Profile> temp = JsonConvert.DeserializeObject<List<Profile>>(File.ReadAllText(Path.Combine(CoreUtil.APPDATA, "profiles.json")));
+                Profiles.AddRange(temp);
+                initialized = true;
+                Instance = this;
+                foreach (IProfile profile in temp)
                 {
-                    Profiles = JsonConvert.DeserializeObject<List<IProfile>>(Path.Combine(CoreUtil.APPDATA, "Profiles", "profiles.json"));
-                    foreach (IProfile profile in Profiles)
+                    if (profile.IsDefault)
                     {
-                        if (profile.IsDefault)
-                        {
-                            ActiveProfile = profile;
-                            break;
-                        }
+                        ActiveProfile = profile;
+                        return;
                     }
                 }
-                else
+                if (Profiles.Count > 0)
                 {
-                    Profiles = new List<IProfile>();
+                    ActiveProfile = Profiles[0];
+                    ActiveProfile.IsDefault = true;
+                    return;
                 }
             }
-            else
-            {
-                Profiles = new List<IProfile>();
-            }
+            Profiles = new List<IProfile>();
             ActiveProfile = new Profile();
             Profiles.Add(ActiveProfile);
+        }
+
+        public void Dispose()
+        {
+            SerializeProfiles();
+            Profiles = null;
+            ActiveProfile = null;
+        }
+
+        public void SerializeProfiles()
+        {
+            if (!Directory.Exists(CoreUtil.APPDATA)) Directory.CreateDirectory(CoreUtil.APPDATA);
+            if (!File.Exists(Path.Combine(CoreUtil.APPDATA, "profiles.json"))) File.Create(Path.Combine(CoreUtil.APPDATA, "profiles.json")).Close();
+
+            Logger.Info("Writing Profiles to disk");
+            File.WriteAllText(Path.Combine(CoreUtil.APPDATA, "profiles.json"), JsonConvert.SerializeObject(Profiles));
         }
     }
 }

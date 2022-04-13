@@ -35,7 +35,7 @@ namespace MusicPlayer.Core.Playback.Queue
         public QueueMediator(IMainViewModel mainViewModel)
         {
             this.mainViewModel = mainViewModel;
-            Queue = new List<ISong>();
+            Queue = mainViewModel.HomeVM.GetSongs();
         }
 
         /// <summary>

@@ -9,27 +9,34 @@
 
 #endregion "copyright"
 
+using MusicPlayer.Core;
 using MusicPlayer.Core.Playback.Queue;
 using MusicPlayer.Core.Playback.Queue.Interfaces;
+using MusicPlayer.Core.Profile;
 using MusicPlayer.Core.Songs.Interfaces;
 using MusicPlayer.MVVM.ViewModel.Interfaces;
 using MusicPlayer.Util;
 using System;
-using System.Windows;
-using System.Windows.Input;
 
 namespace MusicPlayer.MVVM.ViewModel
 {
     public class MainViewModel : ObservableObject, IMainViewModel
     {
-        public HomeViewModel HomeViewModel { get; }
+        public IHomeVM HomeVM { get; }
+        public IOptionsVM OptionsVM { get; set; }
         public IQueueMediator Queue { get; }
+        public ProfileService ProfileService { get; } = ProfileService.Instance;
+        public RelayCommand HomeCommand { get; set; }
+        public RelayCommand OptionsCommand { get; set; }
+        public RelayCommand TogglePlay { get; set; }
+        public RelayCommand PlayNext { get; set; }
+        public RelayCommand PlayPrevious { get; set; }
 
         private object _activeVM;
         public object ActiveVM
         {
             get => _activeVM;
-            set
+            private set
             {
                 _activeVM = value;
                 RaisePropertyChanged();
@@ -86,20 +93,46 @@ namespace MusicPlayer.MVVM.ViewModel
             }
         }
 
-        private static MainViewModel instance;
+        public static MainViewModel instance;
 
         public MainViewModel()
         {
-            HomeViewModel = new HomeViewModel();
-            ActiveVM = HomeViewModel;
-            Queue = new QueueMediator(this);
             instance = this;
+            HomeVM = new HomeVM();
+            OptionsVM = new OptionsVM();
+            ActiveVM = HomeVM;
+            
+            Queue = new QueueMediator(this);
             Queue.OnSongChanged += Queue_OnSongChanged;
+
+            HomeCommand = new RelayCommand(o =>
+            {
+                ChangeTab(ApplicationTab.HOME);
+            });
+
+            OptionsCommand = new RelayCommand(o =>
+            {
+                ChangeTab(ApplicationTab.OPTIONS);
+            });
+        }
+
+        public void ChangeTab(ApplicationTab tab)
+        {
+            switch (tab)
+            {
+                case ApplicationTab.HOME:
+                    ActiveVM = HomeVM;
+                    break;
+                case ApplicationTab.OPTIONS:
+                    ActiveVM = OptionsVM;
+                    break;
+            }
         }
 
         private void Queue_OnSongChanged(object sender, ISong e)
         {
-            RaiseAllPropertiesChanged();
+            TrackDuration = e.Info.Duration;
+            TrackTitle = e.Info.Title;
         }
 
         private async void UpdateProgressAsync()
@@ -110,7 +143,6 @@ namespace MusicPlayer.MVVM.ViewModel
             await CoreUtil.WaitForMouseUp();
             instance.Queue.SetProgress(new TimeSpan(0, 0, (int)Math.Round(ProgressValue)));
             Progress = new TimeSpan(0, 0, (int)Math.Round(ProgressValue));
-            Logger.Info("Progress set to " + (int)Math.Round(ProgressValue));
             _progressValueUpdating = false;
         }
     }

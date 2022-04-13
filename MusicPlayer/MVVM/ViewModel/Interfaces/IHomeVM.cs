@@ -9,24 +9,17 @@
 
 #endregion "copyright"
 
-using MusicPlayer.Core.Songs;
-using MusicPlayer.Util;
+using MusicPlayer.Core.Songs.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace MusicPlayer.MVVM.ViewModel
+namespace MusicPlayer.MVVM.ViewModel.Interfaces
 {
-    public class HomeViewModel : ObservableObject
+    public interface IHomeVM
     {
-        private List<Song> _songs;
-        public List<Song> Songs
-        {
-            get => _songs;
-            private set
-            {
-                _songs = value;
-                RaisePropertyChanged();
-            }
-        }
+        List<ISong> GetSongs();
     }
 }

@@ -22,7 +22,7 @@ namespace MusicPlayer.Core.Profile
 
         [JsonIgnore]
         public ColorSchema ColorSchema { get; set; }
-        public List<Song> Songs { get; set; }
+        public List<Song> Songs { get; set; } = new List<Song>();
         public string Name { get; set; } = "Profile";
         public string ColorSchemaName { get; set; } = "Dark";
         public bool IsDefault { get; set; } = true;

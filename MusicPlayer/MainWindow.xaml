@@ -39,6 +39,7 @@
 
             <RadioButton
                 Height="100"
+                Command="{Binding HomeCommand}"
                 IsChecked="True"
                 Style="{StaticResource MenuButton}">
 
@@ -47,12 +48,31 @@
                         Width="40"
                         Height="40"
                         HorizontalAlignment="Center"
-                        Source="{StaticResource HomeIcon}" />
+                        Source="{StaticResource Home}" />
                     <TextBlock
                         HorizontalAlignment="Center"
                         FontSize="20"
-                        Foreground="{StaticResource PrimaryBrush}"
+                        Foreground="{StaticResource ButtonForegroundBrush}"
                         Text="Home" />
+                </StackPanel>
+            </RadioButton>
+
+            <RadioButton
+                Height="100"
+                Command="{Binding OptionsCommand}"
+                Style="{StaticResource MenuButton}">
+
+                <StackPanel Orientation="Vertical">
+                    <Image
+                        Width="40"
+                        Height="40"
+                        HorizontalAlignment="Center"
+                        Source="{StaticResource Options}" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        FontSize="20"
+                        Foreground="{StaticResource ButtonForegroundBrush}"
+                        Text="Options" />
                 </StackPanel>
             </RadioButton>
         </StackPanel>
@@ -64,6 +84,12 @@
             Content="{Binding ActiveVM}" />
 
         <StackPanel Grid.Row="3" Grid.ColumnSpan="2">
+            <StackPanel.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Offset="0.0" Color="{DynamicResource {StaticResource ButtonBackgroundSelectedBrush}}" />
+                    <GradientStop Offset="1" Color="{DynamicResource {StaticResource ButtonBackgroundBrush}}" />
+                </LinearGradientBrush>
+            </StackPanel.Background>
             <TextBlock
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"

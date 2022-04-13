@@ -10,20 +10,27 @@
 #endregion "copyright"
 
 
+using MusicPlayer.MVVM.ViewModel;
 using MusicPlayer.Util;
 using System;
 using System.IO;
 
 namespace MusicPlayer.Core.Songs
 {
-    internal class SongImporter
+    public static class SongImporter
     {
-        public SongImporter()
-        {
-        }
 
-        public Song ImportFromPath(string path)
+        public static Song ImportFromPath(string path)
         {
+            foreach (Song s in MainViewModel.instance.ProfileService.ActiveProfile.Songs)
+            {
+                if (s.Info.FilePath == path)
+                {
+                    Logger.Warn($"File with same path already exists in profile: {path}");
+                    return null;
+                }
+            }
+            
             string extension = path.ToLower().Split('.')[path.ToLower().Split('.').Length - 1];
             
             TagLib.File tags = TagLib.File.Create(path);
@@ -35,12 +42,13 @@ namespace MusicPlayer.Core.Songs
             TimeSpan duration;
             FileTypes FileType = extension switch
             {
-                "AIFF" => FileTypes.AIFF,
+                "aiff" => FileTypes.AIFF,
                 "flac" => FileTypes.FLAC,
                 "mp3" => FileTypes.MP3,
                 "ogg" => FileTypes.OGG,
                 "wav" => FileTypes.WAV,
                 "wma" => FileTypes.WMA,
+                "m4a" => FileTypes.M4A,
                 _ => throw new ArgumentException($"Filetype not supported: {path}"),
             };
             if (tags.PossiblyCorrupt)
@@ -75,13 +83,17 @@ namespace MusicPlayer.Core.Songs
             return new Song(songInfo);
         }
 
-        public Song ImportFromInfo(SongInfo info)
+        public static Song ImportFromInfo(SongInfo info)
         {
             return new Song(info);
         }
 
-        private Genre MatchStringToGenre(string genre)
+        private static Genre MatchStringToGenre(string genre)
         {
+            if (string.IsNullOrEmpty(genre))
+            {
+                return Genre.OTHER;
+            }
             genre = genre.ToUpper();
 
             return genre switch

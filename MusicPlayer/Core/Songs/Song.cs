@@ -13,6 +13,7 @@ using MusicPlayer.Core.Playback.Queue.Interfaces;
 using MusicPlayer.Core.Songs.Interfaces;
 using MusicPlayer.Util;
 using NAudio.Wave;
+using Newtonsoft.Json;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,8 +30,6 @@ namespace MusicPlayer.Core.Songs
 
         #region Private Fields
         
-        private SongInfo Info { get; set; }
-        
         private Task PlayTask;
         private CancellationTokenSource PlayCancellationToken;
         private WaveOutEvent activeDevice;
@@ -41,15 +40,13 @@ namespace MusicPlayer.Core.Songs
 
         #region Public Properties
 
+        [JsonIgnore]
         public TimeSpan Progress { get; set; }
+        public SongInfo Info { get; set; }
 
         #endregion
 
         #region Interface Methods
-        public SongInfo GetInfo()
-        {
-            return Info;
-        }
 
         public async Task Play(IQueueMediator mediator)
         {

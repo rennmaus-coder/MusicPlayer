@@ -37,6 +37,7 @@ namespace MusicPlayer.Core.Profile
                 try
                 {
                     schemas = JsonConvert.DeserializeObject<List<JsonColor>>(File.ReadAllText(schemafile));
+                    Logger.Info($"Deserializing ColorSchemas, found {schemas.Count} entries");
                     foreach (JsonColor color in schemas)
                     {
                         ColorSchema colorSchema = new ColorSchema
