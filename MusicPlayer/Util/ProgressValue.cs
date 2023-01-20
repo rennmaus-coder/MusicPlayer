@@ -9,25 +9,17 @@
 
 #endregion "copyright"
 
-using MusicPlayer.Core.Songs;
-using MusicPlayer.Core.Songs.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MusicPlayer.Core.Profile
+namespace MusicPlayer.Util
 {
-    public interface IProfile
+    public class ProgressValue
     {
-        ColorSchema ColorSchema { get; set; }
-        List<ISong> Songs { get; set; }
-        bool IsDefault { get; set; }
-        string Name { get; set; }
-        Guid Id { get; set; }
-
-        ColorSchemas GetColorSchemas();
-        void SetColorSchema(ColorSchema colorSchema);
+        public double Progress { get; set; }
+        public bool FromCode { get; set; } = false;
     }
 }

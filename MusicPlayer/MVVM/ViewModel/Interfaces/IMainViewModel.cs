@@ -21,5 +21,9 @@ namespace MusicPlayer.MVVM.ViewModel.Interfaces
         IQueueMediator Queue { get; }
         ProfileService ProfileService { get; }
         string TrackTitle { get; set; }
+
+        void TogglePlay();
+        void PlayNext();
+        void PlayPrevious();
     }
 }

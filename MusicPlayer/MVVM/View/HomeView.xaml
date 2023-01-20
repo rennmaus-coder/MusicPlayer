@@ -12,10 +12,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:MusicPlayer.MVVM.View"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:songs="clr-namespace:MusicPlayer.Core.Songs"
     xmlns:viewmodel="clr-namespace:MusicPlayer.MVVM.ViewModel"
+    d:DataContext="{d:DesignInstance Type=viewmodel:HomeVM}"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    DataContext="{Binding HomeVM, Source={x:Static viewmodel:MainViewModel.instance}}"
     mc:Ignorable="d">
     <Grid>
         <StackPanel
@@ -26,7 +27,49 @@
             Width="35"
             Height="35"
             Command="{Binding ImportSongs}"
-            Content="{StaticResource Add}"
-            Foreground="{StaticResource ButtonForegroundBrush}" />
+            Foreground="{StaticResource ButtonForegroundBrush}">
+            <Image Margin="5" Source="{StaticResource Add}" />
+        </Button>
+        <ListView ItemsSource="{Binding Songs}">
+            <ListView.View>
+                <GridView AllowsColumnReorder="False">
+                    <GridViewColumn Width="200" Header="Title">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type songs:Song}">
+                                <TextBlock Text="{Binding Info.Title}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Width="75" Header="Duration">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type songs:Song}">
+                                <TextBlock Text="{Binding Path=Info.Duration, Converter={StaticResource TimeSpanConverter}}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Width="300" Header="Album">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type songs:Song}">
+                                <TextBlock Text="{Binding Info.Album}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Width="300" Header="Filepath">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type songs:Song}">
+                                <TextBlock Text="TETETE" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Width="300" Header="Filepath">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type songs:Song}">
+                                <TextBlock Text="{Binding Info.FilePath}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </UserControl>

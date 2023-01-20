@@ -56,7 +56,7 @@ namespace MusicPlayer.Core.Songs
                 Logger.Warn($"File may be corrupt, please check: {path}\nReasons: {string.Join("\n", tags.CorruptionReasons)}");
             }
             title = tags.Tag.Title;
-            songwriter = tags.Tag.FirstPerformer;
+            songwriter = tags.Tag?.AlbumArtists[0];
             album = tags.Tag.Album;
             duration = tags.Properties.Duration;
             bitrate = tags.Properties.AudioBitrate;

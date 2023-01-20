@@ -9,25 +9,21 @@
 
 #endregion "copyright"
 
-using MusicPlayer.Core.Songs;
-using MusicPlayer.Core.Songs.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MusicPlayer.Core.Profile
+namespace MusicPlayer.Util
 {
-    public interface IProfile
+    public static class Extensions
     {
-        ColorSchema ColorSchema { get; set; }
-        List<ISong> Songs { get; set; }
-        bool IsDefault { get; set; }
-        string Name { get; set; }
-        Guid Id { get; set; }
-
-        ColorSchemas GetColorSchemas();
-        void SetColorSchema(ColorSchema colorSchema);
+        public static T Clamp<T>(this T val, T min, T max) where T : IComparable<T>
+        {
+            if (val.CompareTo(min) < 0) return min;
+            else if (val.CompareTo(max) > 0) return max;
+            else return val;
+        }        
     }
 }

@@ -12,6 +12,7 @@
 using MusicPlayer.MVVM.ViewModel;
 using System.ServiceModel;
 using System.Windows;
+using System.Windows.Input;
 
 namespace MusicPlayer
 {
@@ -29,6 +30,18 @@ namespace MusicPlayer
             {
                 MainViewModel.instance.ProfileService.Dispose();
             };
+        }
+
+        public void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // if (e.ChangedButton == MouseButton.Left)
+                // MainViewModel.instance.SliderIsUpdating = true;
+        }
+
+        public void OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            // if (e.ChangedButton == MouseButton.Left)
+            //    MainViewModel.instance.SliderIsUpdating = false;
         }
     }
 }

@@ -14,7 +14,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.ServiceModel;
 using System.Windows;
 
 namespace MusicPlayer.Core.Profile
@@ -82,7 +81,7 @@ namespace MusicPlayer.Core.Profile
             if (!File.Exists(Path.Combine(CoreUtil.APPDATA, "profiles.json"))) File.Create(Path.Combine(CoreUtil.APPDATA, "profiles.json")).Close();
 
             Logger.Info("Writing Profiles to disk");
-            File.WriteAllText(Path.Combine(CoreUtil.APPDATA, "profiles.json"), JsonConvert.SerializeObject(Profiles));
+            File.WriteAllText(Path.Combine(CoreUtil.APPDATA, "profiles.json"), JsonConvert.SerializeObject(Profiles, Formatting.Indented));
         }
     }
 }

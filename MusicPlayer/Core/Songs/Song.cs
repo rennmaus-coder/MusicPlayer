@@ -15,7 +15,6 @@ using MusicPlayer.Util;
 using NAudio.Wave;
 using Newtonsoft.Json;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace MusicPlayer.Core.Songs
@@ -26,12 +25,14 @@ namespace MusicPlayer.Core.Songs
         /// Creates a new instance of the <see cref="Song"/> class.
         /// </summary>
         /// <param name="info">A SongInfo instance</param>
-        public Song(SongInfo info) => Info = info;
+        public Song(SongInfo info)
+        {
+            Info = info;
+            Progress = TimeSpan.Zero;
+        }
 
         #region Private Fields
         
-        private Task PlayTask;
-        private CancellationTokenSource PlayCancellationToken;
         private WaveOutEvent activeDevice;
         private AudioFileReader activeReader;
         private IQueueMediator queue;
@@ -39,10 +40,13 @@ namespace MusicPlayer.Core.Songs
         #endregion
 
         #region Public Properties
-
-        [JsonIgnore]
+        
+        [JsonIgnore]        
         public TimeSpan Progress { get; set; }
         public SongInfo Info { get; set; }
+
+        [JsonIgnore]
+        public bool WasCancelled { get; set; } = false;
 
         #endregion
 
@@ -51,47 +55,50 @@ namespace MusicPlayer.Core.Songs
         public async Task Play(IQueueMediator mediator)
         {
             queue = mediator;
-            if (PlayTask.Status == TaskStatus.Running)
+            
+            if (activeDevice is null || activeDevice.PlaybackState != PlaybackState.Playing)
             {
-                Logger.Warn($"Song {Info.Title} is already playing");
-                return;
+                try
+                {
+                    activeReader = new AudioFileReader(Info.FilePath);
+                    using (activeDevice = new WaveOutEvent())
+                    {
+                        activeDevice.Init(activeReader);
+                        activeReader.CurrentTime = Progress;
+                        queue.IsPlaying = true;
+                        activeDevice.Play();
+                        
+                        while (activeDevice.PlaybackState == PlaybackState.Playing)
+                        {
+                            Progress = activeReader.CurrentTime;
+                            queue.UpdateProgress(Progress);
+                            await Task.Delay(100);
+                        }
+                        if (activeDevice.PlaybackState == PlaybackState.Stopped) 
+                            WasCancelled = true;
+                        else
+                            WasCancelled = false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                }
             }
-
-            PlayTask = new Task(() => PlayThread(new TimeSpan(0, 0, 0)), PlayCancellationToken.Token, TaskCreationOptions.LongRunning);
-            PlayTask.Start();
-            PlayTask.Wait();
-
             return;
         }
 
         public void Stop()
         {
-            if (PlayTask is null || PlayCancellationToken is null || activeDevice is null) return;
+            if (activeDevice is null) return;
             activeDevice.Stop();
-            if (PlayTask.Status == TaskStatus.Running)
-            {
-                PlayCancellationToken.Cancel();
-            }
-            Progress = new TimeSpan(0, 0, 0);
+            WasCancelled = true;
         }
 
-        /// <summary>
-        /// Stops the song, progress stays the same.
-        /// </summary>
         public void Pause()
         {
             if (activeDevice is null) return;
             activeDevice.Pause();
-        }
-
-        public bool Continue()
-        {
-            if (activeDevice != null)
-            {
-                activeDevice.Play();
-                return true;
-            }
-            return false;
         }
 
         public void SetProgress(TimeSpan progress) {
@@ -99,28 +106,6 @@ namespace MusicPlayer.Core.Songs
             activeReader.CurrentTime = progress;
             Progress = progress;
         }
-        #endregion
-
-        #region Private Methods
-
-        [STAThread]
-        private void PlayThread(TimeSpan progress)
-        {
-            activeReader = new AudioFileReader(Info.FilePath);
-            using (activeDevice = new WaveOutEvent())
-            {
-                activeDevice.Init(activeReader);
-                activeReader.CurrentTime = progress;
-                activeDevice.Play();
-                while (activeDevice.PlaybackState == PlaybackState.Playing)
-                {
-                    Thread.Sleep(100);
-                    Progress = activeReader.CurrentTime;
-                    queue.UpdateProgress(Progress);
-                }
-            }
-        }
-        
         #endregion
     }
 }

@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
 
                 <resources:SharedResourceDictionary Source="/MusicPlayer;component/Resources/ProfileService.xaml" />
+                <resources:SharedResourceDictionary Source="/MusicPlayer;component/Resources/Converters.xaml" />
 
                 <resources:SharedResourceDictionary Source="/MusicPlayer;component/Resources/Brushes.xaml" />
 

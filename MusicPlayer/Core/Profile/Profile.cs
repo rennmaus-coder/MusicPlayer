@@ -11,6 +11,7 @@
 
 using MusicPlayer.Core.Songs;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace MusicPlayer.Core.Profile
@@ -26,6 +27,7 @@ namespace MusicPlayer.Core.Profile
         public string Name { get; set; } = "Profile";
         public string ColorSchemaName { get; set; } = "Dark";
         public bool IsDefault { get; set; } = true;
+        public Guid Id { get; set; }
 
         public Profile()
         {

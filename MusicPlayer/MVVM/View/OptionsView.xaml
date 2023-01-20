@@ -92,8 +92,9 @@
             <Button
                 Width="35"
                 Height="35"
-                Content="{StaticResource Add}"
-                Foreground="{StaticResource ButtonForegroundBrush}" />
+                Foreground="{StaticResource ButtonForegroundBrush}">
+                <Image Margin="5" Source="{StaticResource Add}" />
+            </Button>
         </StackPanel>
     </Grid>
 </UserControl>

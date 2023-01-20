@@ -17,6 +17,8 @@ using MusicPlayer.Core.Songs.Interfaces;
 using MusicPlayer.MVVM.ViewModel.Interfaces;
 using MusicPlayer.Util;
 using System;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace MusicPlayer.MVVM.ViewModel
 {
@@ -28,9 +30,9 @@ namespace MusicPlayer.MVVM.ViewModel
         public ProfileService ProfileService { get; } = ProfileService.Instance;
         public RelayCommand HomeCommand { get; set; }
         public RelayCommand OptionsCommand { get; set; }
-        public RelayCommand TogglePlay { get; set; }
-        public RelayCommand PlayNext { get; set; }
-        public RelayCommand PlayPrevious { get; set; }
+        public RelayCommand TogglePlayCommand { get; set; }
+        public RelayCommand PlayNextCommand { get; set; }
+        public RelayCommand PlayPreviousCommand { get; set; }
 
         private object _activeVM;
         public object ActiveVM
@@ -49,24 +51,28 @@ namespace MusicPlayer.MVVM.ViewModel
             get => _progress;
             set
             {
-                _progress = value;
+                if (SliderIsUpdating)
+                    return;
+                _progress = new TimeSpan(value.Hours, value.Minutes, value.Seconds);
+                ProgressValue = new ProgressValue() { Progress = value.TotalSeconds, FromCode = true };
                 RaisePropertyChanged();
             }
         }
 
-        private TimeSpan _trackDuration = new TimeSpan(0, 0, 100);
+        private TimeSpan _trackDuration = new TimeSpan(0, 0, 0);
         public TimeSpan TrackDuration
         {
             get => _trackDuration;
             set
             {
-                _trackDuration = value;
+                _trackDuration = new TimeSpan(value.Hours, value.Minutes, value.Seconds);
+
                 RaisePropertyChanged();
             }
         }
 
         private double _progressValue;
-        public double ProgressValue
+        /* public double ProgressValue
         {
             get => _progressValue;
             set
@@ -78,9 +84,42 @@ namespace MusicPlayer.MVVM.ViewModel
                     RaisePropertyChanged();
                 }
             }
+        } */
+
+        // This Property only gets called from the XAML
+        /* public double ProgressXAML
+        {
+            get => ProgressValue;
+            set
+            {
+                if (!fromCode)
+                    UpdateProgressAsync();
+                else
+                    ProgressValue = value;
+            }
+        } */
+
+        public ProgressValue ProgressValue
+        {
+            get => new ProgressValue() { Progress = _progressValue };
+            set
+            {
+                if (!value.FromCode)
+                {
+                    UpdateProgressAsync();
+                    RaisePropertyChanged();
+                }
+                else
+                {
+                    if (!SliderIsUpdating)
+                    {
+                        _progressValue = value.Progress;
+                        RaisePropertyChanged();
+                    }
+                }
+            }
         }
 
-        private bool _progressValueUpdating;
 
         private string _trackTitle;
         public string TrackTitle
@@ -94,16 +133,17 @@ namespace MusicPlayer.MVVM.ViewModel
         }
 
         public static MainViewModel instance;
+        public bool SliderIsUpdating { get; set; } = false;
 
         public MainViewModel()
         {
             instance = this;
             HomeVM = new HomeVM();
-            OptionsVM = new OptionsVM();
+            OptionsVM = new OptionsVM(ProfileService);
             ActiveVM = HomeVM;
             
             Queue = new QueueMediator(this);
-            Queue.OnSongChanged += Queue_OnSongChanged;
+            Queue.SongChanged += Queue_OnSongChanged;
 
             HomeCommand = new RelayCommand(o =>
             {
@@ -113,6 +153,21 @@ namespace MusicPlayer.MVVM.ViewModel
             OptionsCommand = new RelayCommand(o =>
             {
                 ChangeTab(ApplicationTab.OPTIONS);
+            });
+
+            TogglePlayCommand = new RelayCommand(o =>
+            {
+                TogglePlay();
+            });
+
+            PlayNextCommand = new RelayCommand(o =>
+            {
+                PlayNext();
+            });
+
+            PlayPreviousCommand = new RelayCommand(o =>
+            {
+                PlayPrevious();
             });
         }
 
@@ -129,6 +184,30 @@ namespace MusicPlayer.MVVM.ViewModel
             }
         }
 
+        public void TogglePlay()
+        {
+            if (Queue.IsPlaying)
+            {
+                Queue.Pause();
+            }
+            else
+            {
+                Queue.StartAt(-1);
+            }
+        }
+
+        public void PlayNext()
+        {
+            Queue.Stop();
+            Queue.PlayNext();
+        }
+
+        public void PlayPrevious()
+        {
+            Queue.Stop();
+            Queue.PlayPrevious();
+        }
+
         private void Queue_OnSongChanged(object sender, ISong e)
         {
             TrackDuration = e.Info.Duration;
@@ -137,13 +216,13 @@ namespace MusicPlayer.MVVM.ViewModel
 
         private async void UpdateProgressAsync()
         {
-            if (_progressValueUpdating)
+            if (SliderIsUpdating)
                 return;
-            _progressValueUpdating = true;
+            SliderIsUpdating = true;
             await CoreUtil.WaitForMouseUp();
-            instance.Queue.SetProgress(new TimeSpan(0, 0, (int)Math.Round(ProgressValue)));
-            Progress = new TimeSpan(0, 0, (int)Math.Round(ProgressValue));
-            _progressValueUpdating = false;
+            instance.Queue.SetProgress(new TimeSpan(0, 0, (int)Math.Round(ProgressValue.Progress)));
+            Progress = new TimeSpan(0, 0, (int)Math.Round(ProgressValue.Progress));
+            SliderIsUpdating = false;
         }
     }
 }

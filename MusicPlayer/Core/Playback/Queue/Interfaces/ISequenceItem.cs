@@ -17,10 +17,10 @@ namespace MusicPlayer.Core.Playback.Queue.Interfaces
     public interface ISequenceItem
     {
         TimeSpan Progress { get; set; }
+        bool WasCancelled { get; set; }
         Task Play(IQueueMediator mediator);
-        bool Continue();
-        void Stop();
         void Pause();
+        void Stop();
         void SetProgress(TimeSpan progress); 
     }
 }

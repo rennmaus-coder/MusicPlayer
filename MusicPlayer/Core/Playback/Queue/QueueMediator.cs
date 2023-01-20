@@ -10,13 +10,11 @@
 #endregion "copyright"
 
 using MusicPlayer.Core.Playback.Queue.Interfaces;
-using MusicPlayer.Core.Songs;
 using MusicPlayer.Core.Songs.Interfaces;
 using MusicPlayer.MVVM.ViewModel;
 using MusicPlayer.MVVM.ViewModel.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace MusicPlayer.Core.Playback.Queue
 {
@@ -24,13 +22,13 @@ namespace MusicPlayer.Core.Playback.Queue
     {
         public List<ISong> Queue { get; set; }
         public ISong CurrentSong { get; set; }
+        public bool IsPlaying { get; set; }
 
-        public event EventHandler<ISong> OnSongChanged;
+        public event EventHandler<ISong> SongChanged;
         public RelayCommand TogglePlay { get; set; }
 
         private IMainViewModel mainViewModel;
-        private bool isPlaying;
-        private List<ISong> PlayedSongs;
+        private int currentIndex = 0;
 
         public QueueMediator(IMainViewModel mainViewModel)
         {
@@ -42,32 +40,72 @@ namespace MusicPlayer.Core.Playback.Queue
         /// Starts the playback of the first song in the queue and continues further
         /// </summary>
         /// <returns></returns>
-        public async Task PlayNext()
+        public void PlayNext()
         {
-            if (Queue.Count == 0 || isPlaying)
-            {
-                return;
-            }
-            CurrentSong = Queue[0];
-            isPlaying = true;
-            OnSongChanged?.Invoke(this, CurrentSong);
-            await CurrentSong.Play(this);
-            Queue.RemoveAt(0);
-            PlayedSongs.Insert(0, CurrentSong);
-            PlayNext();
+            CurrentSong?.Stop();
+            StartAt(Queue.IndexOf(CurrentSong) + 1);
         }
 
-        public async Task PlayPrevious()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="index">If set to -1 it will continue from the last position</param>
+        public async void StartAt(int index)
         {
-            if (CurrentSong?.Progress.TotalSeconds < 5)
+            if (Queue.Count == 0)
+                return;
+
+            if (index >= Queue.Count)
+                return;
+
+            if (CurrentSong != null)
             {
-                CurrentSong.SetProgress(new TimeSpan(0, 0, 0));
+                CurrentSong.Stop();
+            }
+            IsPlaying = true;
+
+            if (index >= 0)
+            {
+                currentIndex = index;
+            }
+
+            for (; currentIndex < Queue.Count; currentIndex++)
+            {
+                CurrentSong = Queue[currentIndex];
+                SongChanged?.Invoke(this, CurrentSong);
                 await CurrentSong.Play(this);
+                if (CurrentSong.WasCancelled)
+                {
+                    IsPlaying = false;
+                    return;
+                }
+            }
+            IsPlaying = false;
+        }
+
+        public void PlayPrevious()
+        {
+            if (CurrentSong?.Progress.TotalSeconds < 5 || currentIndex >= Queue.Count)
+            {
+                CurrentSong.Stop();
+                StartAt(Queue.IndexOf(CurrentSong) - 2);
             }
             else
             {
-                Queue.Insert(0, PlayedSongs[0]);
+                SetProgress(new TimeSpan(0, 0, 0));
             }
+        }
+
+        public void Stop()
+        {
+            CurrentSong.Stop();
+            IsPlaying = false;
+        }
+
+        public void Pause() 
+        {
+            CurrentSong.Pause();
+            IsPlaying = false;
         }
 
         public void UpdateProgress(TimeSpan progress)

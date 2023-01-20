@@ -10,18 +10,20 @@
 #endregion "copyright"
 
 using MusicPlayer.Core;
+using MusicPlayer.Core.Profile;
 using MusicPlayer.Core.Songs;
 using MusicPlayer.Core.Songs.Interfaces;
 using MusicPlayer.MVVM.ViewModel.Interfaces;
 using MusicPlayer.Util;
+using System;
 using System.Collections.Generic;
 
 namespace MusicPlayer.MVVM.ViewModel
 {
     public class HomeVM : ObservableObject, IHomeVM
     {
-        private List<Song> _songs = MainViewModel.instance.ProfileService.ActiveProfile.Songs;
-        public List<Song> Songs
+        private List<ISong> _songs = MainViewModel.instance.ProfileService.ActiveProfile.Songs;
+        public List<ISong> Songs
         {
             get => _songs;
             private set
@@ -31,10 +33,15 @@ namespace MusicPlayer.MVVM.ViewModel
             }
         }
 
+        private ProfileService profile;
+
+        public event EventHandler SongsChanged;
+
         public RelayCommand ImportSongs { get; set; }
 
-        public HomeVM()
-        {            
+        public HomeVM(ProfileService profile)
+        {     
+            this.profile = profile;
             ImportSongs = new RelayCommand(_ =>
             {
                 List<Song> temp = Songs;
@@ -53,9 +60,7 @@ namespace MusicPlayer.MVVM.ViewModel
 
         public List<ISong> GetSongs()
         {
-            List<ISong> result = new List<ISong>();
-            result.AddRange(Songs);
-            return result;
+            return profile.ActiveProfile.Songs;
         }
     }
 }
